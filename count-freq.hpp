@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 #include "parser.hpp"
+#include <cstdint>
+
 
 class FreqCounter {
 public:
@@ -11,8 +13,10 @@ public:
     void add(const Token& token);
     void print() const;
 
+    const std::unordered_map<std::string, uint64_t>& getTable() const { return freq; }
+
 private:
-    std::unordered_map<std::string, int> freq;
+    std::unordered_map<std::string, uint64_t> freq;
 };
 
 #endif

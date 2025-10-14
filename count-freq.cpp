@@ -10,6 +10,6 @@ void FreqCounter::add(const Token& token) {
 }
 
 void FreqCounter::print() const {
-    for (const auto& [token, count] : freq)
-        std::cout << token << ": " << count << '\n';
+    for (const auto& i : freq)
+        std::cout << i.first << ": " << i.second << '\n';
 }

@@ -2,11 +2,18 @@
 #include <queue>
 #include <unordered_map>
 #include <cstdint>
+#include <vector>
+#include <algorithm>
 
 HuffmanNode* buildHuffmanTree(const std::unordered_map<std::string, uint64_t>& freqMap) {
     std::priority_queue<HuffmanNode*, std::vector<HuffmanNode*>, Compare> pq;
 
-    for (auto [symbol, freq] : freqMap)
+    // Copia as entradas e ordena por símbolo (ordem determinística)
+    std::vector<std::pair<std::string, uint64_t>> entries(freqMap.begin(), freqMap.end());
+    std::sort(entries.begin(), entries.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    for (const auto& [symbol, freq] : entries)
         pq.push(new HuffmanNode(symbol, freq));
 
     while (pq.size() > 1) {

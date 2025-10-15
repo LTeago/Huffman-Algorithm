@@ -17,9 +17,12 @@ struct HuffmanNode {
 
 struct Compare {
     bool operator()(HuffmanNode* a, HuffmanNode* b) const {
-        return a->freq > b->freq;
+        if (a->freq == b->freq)
+            return a->symbol > b->symbol; // desempate determinístico
+        return a->freq > b->freq; // menor frequência tem mais prioridade
     }
 };
+
 
 HuffmanNode* buildHuffmanTree(const std::unordered_map<std::string, uint64_t>& freqMap);
 void freeTree(HuffmanNode* node);

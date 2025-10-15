@@ -33,7 +33,19 @@ std::vector<Token> parse_tokens(const std::string& filename) {
     while (i < code.size()) {
         char c = code[i];
 
-        // Strings e chars literais
+        // ======== Preserva espaços e quebras de linha ========
+        if (c == ' ' || c == '\t') {
+            tokens.push_back({"SPACE", " "});
+            i++;
+            continue;
+        }
+        if (c == '\n' || c == '\r') {
+            tokens.push_back({"NEWLINE", "\n"});
+            i++;
+            continue;
+        }
+
+        // ======== Strings e chars literais ========
         if (c == '"' || c == '\'') {
             char quote = c;
             std::string lit; lit.push_back(quote); i++;
@@ -45,46 +57,40 @@ std::vector<Token> parse_tokens(const std::string& filename) {
                 i++;
             }
             tokens.push_back({"STRING", lit});
-            for (char ch : lit) if (!isspace(ch)) tokens.push_back({"CHAR", std::string(1,ch)});
             continue;
         }
 
-        // Pula espaços
-        if (isspace(c)) { i++; continue; }
-
-        // Identificadores, palavras-chave e números
+        // ======== Identificadores, palavras-chave e números ========
         if (isalnum(c) || c == '_') {
             size_t start = i;
             while (i < code.size() && (isalnum(code[i]) || code[i] == '_')) i++;
             std::string word = code.substr(start, i - start);
+
             if (keywords.count(word)) tokens.push_back({"KEYWORD", word});
             else if (isdigit(word[0])) tokens.push_back({"NUMBER", word});
             else tokens.push_back({"IDENTIFIER", word});
 
-            for (char ch : word) tokens.push_back({"CHAR", std::string(1,ch)});
             continue;
         }
 
-        // Operadores de dois caracteres
-        char next = (i+1 < code.size()) ? code[i+1] : '\0';
+        // ======== Operadores de dois caracteres ========
+        char next = (i + 1 < code.size()) ? code[i + 1] : '\0';
         std::string two; two.push_back(c); two.push_back(next);
         if (two_ops.count(two)) {
             tokens.push_back({"SYMBOL", two});
-            tokens.push_back({"CHAR", std::string(1,c)});
-            tokens.push_back({"CHAR", std::string(1,next)});
             i += 2;
             continue;
         }
 
-        // Símbolos de um caractere
+        // ======== Símbolos de um caractere ========
         if (is_symbol(c)) {
-            tokens.push_back({"SYMBOL", std::string(1,c)});
-            tokens.push_back({"CHAR", std::string(1,c)});
+            tokens.push_back({"SYMBOL", std::string(1, c)});
             i++;
             continue;
         }
 
-        tokens.push_back({"CHAR", std::string(1,c)});
+        // ======== Qualquer outro caractere ========
+        tokens.push_back({"CHAR", std::string(1, c)});
         i++;
     }
 
